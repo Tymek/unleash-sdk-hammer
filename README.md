@@ -1,15 +1,12 @@
-# unleash-sdk-hammer
-
-To install dependencies:
+# Unleash SDK Hammer
 
 ```bash
 bun install
+cp .env.example .env
 ```
-
-To run:
-
+Adjust URL and token in `.env`
 ```bash
-bun run index.ts
+bun run setup
+bun run start
+# bun run teardown
 ```
-
-This project was created using `bun init` in bun v1.1.20. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
