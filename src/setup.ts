@@ -1,13 +1,13 @@
+import { base_url, sample } from './utils'
 import { createFlag, createProject, createToken } from './sdk'
 
-const UNLEASH_URL = process.env.UNLEASH_URL || 'http://localhost:4242'
 const UNLEASH_TOKEN = process.env.UNLEASH_URL // Prefer use of PAT (personal access tokens)
 const environments = (process.env.UNLEASH_HAMMER_ENVIRONMENTS || 'development,production').split(
 	',',
 )
 
 if (!UNLEASH_TOKEN) {
-	throw new Error(`Token needed. Get one from ${UNLEASH_URL}/profile/personal-api-tokens`)
+	throw new Error(`Token needed. Get one from ${base_url}/profile/personal-api-tokens`)
 }
 
 const stuffToSpawn = {
@@ -16,8 +16,6 @@ const stuffToSpawn = {
 	flags: Number.parseInt(process.env.UNLEASH_HAMMER_FLAGS || '25', 10),
 }
 
-const sample = <T>(items: T[]) => items[Math.floor(Math.random() * items.length)]
-
 const configPath = './config.json'
 const file = Bun.file(configPath)
 if (await file.exists()) {
@@ -25,7 +23,7 @@ if (await file.exists()) {
 }
 const config = {
 	projects: [] as string[],
-	tokens: [] as string[],
+	tokens: [] as Array<[string, string]>,
 	flags: [] as Array<[string, string]>,
 	bootstrapped: true,
 }
@@ -37,13 +35,13 @@ for (let i = 0; i < stuffToSpawn.projects; i++) {
 }
 
 for (let i = 0; i < stuffToSpawn.apps; i++) {
-	const id = await createToken(sample(environments), config.projects)
+	const [id, secret] = await createToken(sample(environments), config.projects)
 	console.log('Created token:', id)
-	config.tokens.push(id)
+	config.tokens.push([id, secret])
 }
 
 for (let i = 0; i < stuffToSpawn.flags; i++) {
-	const flag = await createFlag(sample(config.projects))
+	const flag = await createFlag(sample(config.projects), environments)
 	console.log('Created flag:', flag)
 	config.flags.push(flag)
 }

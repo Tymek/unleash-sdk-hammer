@@ -1,11 +1,12 @@
 import { unlink } from 'node:fs/promises'
 import { deleteFlag, deleteProject, deleteToken } from './sdk'
+import { base_url } from './utils'
 
 const UNLEASH_URL = process.env.UNLEASH_URL || 'http://localhost:4242'
 const UNLEASH_TOKEN = process.env.UNLEASH_URL
 
 if (!UNLEASH_TOKEN) {
-	throw `Token needed. Get one from ${UNLEASH_URL}/profile/personal-api-tokens`
+	throw `Token needed. Get one from ${base_url}/profile/personal-api-tokens`
 }
 
 const configPath = './config.json'

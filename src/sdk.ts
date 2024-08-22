@@ -1,4 +1,6 @@
-const { UNLEASH_URL, UNLEASH_TOKEN } = process.env
+import { base_url } from './utils'
+
+const { UNLEASH_TOKEN } = process.env
 
 const headers = {
 	Authorization: UNLEASH_TOKEN || '',
@@ -7,7 +9,7 @@ const headers = {
 
 export const createProject = async (name: string) =>
 	(
-		await fetch(`${UNLEASH_URL}/api/admin/projects`, {
+		await fetch(`${base_url}/api/admin/projects`, {
 			method: 'POST',
 			headers,
 			body: JSON.stringify({
@@ -22,7 +24,7 @@ export const createProject = async (name: string) =>
 
 export const deleteProject = async (name: string) =>
 	(
-		await fetch(`${UNLEASH_URL}/api/admin/projects/${name}`, {
+		await fetch(`${base_url}/api/admin/projects/${name}`, {
 			headers,
 			method: 'DELETE',
 		})
@@ -34,7 +36,7 @@ export const createToken = async (
 	prefix = 'hammer',
 ) => {
 	const username = `${prefix}_${crypto.randomUUID()}`
-	await fetch(`${UNLEASH_URL}/api/admin/api-tokens`, {
+	const response = await fetch(`${base_url}/api/admin/api-tokens`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({
@@ -44,13 +46,13 @@ export const createToken = async (
 			projects,
 		}),
 	})
-
-	return username
+	const json = await response.json()
+	return [username, json.secret]
 }
 
 export const deleteToken = async (name: string) =>
 	(
-		await fetch(`${UNLEASH_URL}/api/admin/api-tokens/${name}`, {
+		await fetch(`${base_url}/api/admin/api-tokens/${name}`, {
 			headers,
 			method: 'DELETE',
 		})
@@ -58,14 +60,18 @@ export const deleteToken = async (name: string) =>
 
 export const getTokens = async () =>
 	(
-		await fetch(`${UNLEASH_URL}/api/admin/api-tokens`, {
+		await fetch(`${base_url}/api/admin/api-tokens`, {
 			headers,
 		})
 	).json()
 
-export const createFlag = async (project: string, prefix = 'hammer'): Promise<[string, string]> => {
+export const createFlag = async (
+	project: string,
+	environments: string[],
+	prefix = 'hammer',
+): Promise<[string, string]> => {
 	const name = `${prefix}_${crypto.randomUUID()}`
-	await fetch(`${UNLEASH_URL}/api/admin/projects/${project}/features`, {
+	await fetch(`${base_url}/api/admin/projects/${project}/features`, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify({
@@ -75,13 +81,50 @@ export const createFlag = async (project: string, prefix = 'hammer'): Promise<[s
 			impressionData: true,
 		}),
 	})
+	for (const environment of environments) {
+		await fetch(
+			`${base_url}/api/admin/projects/${project}/features/${name}/environments/${environment}/strategies`,
+			{
+				method: 'POST',
+				headers,
+				body: JSON.stringify({
+					name: 'flexibleRollout',
+					constraints: [],
+					parameters: {
+						rollout: '50',
+						stickiness: 'default',
+						groupId: name,
+					},
+					variants: [],
+					segments: [],
+					disabled: false,
+				}),
+			},
+		)
+
+		await fetch(
+			`${base_url}/api/admin/projects/${project}/features/${name}/environments/${environment}/on?shouldActivateDisabledStrategies=false`,
+			{
+				headers,
+				method: 'POST',
+			},
+		)
+	}
+
 	return [project, name]
 }
 
 export const deleteFlag = async (project: string, id: string) =>
 	(
-		await fetch(`${UNLEASH_URL}/api/admin/projects/${project}/features/${id}`, {
+		await fetch(`${base_url}/api/admin/projects/${project}/features/${id}`, {
 			headers,
 			method: 'DELETE',
 		})
 	).ok
+
+export const getFlags = async () =>
+	(
+		await fetch(`${base_url}/api/admin/search/features`, {
+			headers,
+		})
+	).json()

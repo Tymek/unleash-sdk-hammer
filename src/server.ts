@@ -1,10 +1,10 @@
 import { spawn } from 'bun'
+import { base_url } from './utils'
 
-const UNLEASH_URL = process.env.UNLEASH_URL || 'http://localhost:4242'
 const UNLEASH_TOKEN = process.env.UNLEASH_URL // Prefer use of PAT (personal access tokens)
 
 if (!UNLEASH_TOKEN) {
-	throw new Error(`Token needed. Get one from ${UNLEASH_URL}/profile/personal-api-tokens`)
+	throw new Error(`Token needed. Get one from ${base_url}/profile/personal-api-tokens`)
 }
 
 const configPath = './config.json'
@@ -20,7 +20,7 @@ const buns = new Array(config.tokens.length)
 
 for (let i = 0; i < buns.length; i++) {
 	buns[i] = spawn({
-		cmd: ['bun', './app.ts', config.tokens[i]],
+		cmd: ['bun', './src/app.ts', ...config.tokens[i]],
 		stdout: 'inherit',
 		stderr: 'inherit',
 		stdin: 'inherit',
