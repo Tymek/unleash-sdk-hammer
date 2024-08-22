@@ -1,0 +1,15 @@
+{
+  "name": "unleash-sdk-hammer",
+  "description": "when you need some metrics, and every flag looks like a nail",
+  "module": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "unleash-client": "^6.1.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
