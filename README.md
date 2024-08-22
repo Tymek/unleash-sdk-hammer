@@ -1,5 +1,7 @@
 # Unleash SDK Hammer
 
+Synthetic sample load with Unleash SDK. 
+
 ```bash
 bun install
 cp .env.example .env
