@@ -2,6 +2,8 @@
 
 Synthetic sample load with Unleash SDK. 
 
+Creates new projects, tokens and flags and runs Node SDK on it.
+
 ```bash
 bun install
 cp .env.example .env
