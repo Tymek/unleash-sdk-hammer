@@ -9,6 +9,7 @@
 		"teardown": "bun run src/teardown.ts"
 	},
 	"dependencies": {
+		"nanoid": "^5.0.7",
 		"unleash-client": "^6.1.1"
 	},
 	"devDependencies": {

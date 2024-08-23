@@ -1,4 +1,4 @@
-import { base_url } from './utils'
+import { base_url, id } from './utils'
 
 const { UNLEASH_TOKEN } = process.env
 
@@ -35,7 +35,7 @@ export const createToken = async (
 	projects: string[] = ['*'],
 	prefix = 'hammer',
 ) => {
-	const username = `${prefix}_${crypto.randomUUID()}`
+	const username = `${prefix}_${id()}`
 	const response = await fetch(`${base_url}/api/admin/api-tokens`, {
 		method: 'POST',
 		headers,
@@ -70,7 +70,7 @@ export const createFlag = async (
 	environments: string[],
 	prefix = 'hammer',
 ): Promise<[string, string]> => {
-	const name = `${prefix}_${crypto.randomUUID()}`
+	const name = `${prefix}_${id()}`
 	await fetch(`${base_url}/api/admin/projects/${project}/features`, {
 		method: 'POST',
 		headers,
