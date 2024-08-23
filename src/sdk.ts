@@ -1,4 +1,4 @@
-import { base_url, id } from './utils'
+import { base_url, gaussianSample, id } from './utils'
 
 const { UNLEASH_TOKEN } = process.env
 
@@ -82,6 +82,8 @@ export const createFlag = async (
 		}),
 	})
 	for (const environment of environments) {
+		const rollout = `${Math.round(gaussianSample(Array.from({ length: 99 }, (_, i) => i + 1)))}`
+
 		await fetch(
 			`${base_url}/api/admin/projects/${project}/features/${name}/environments/${environment}/strategies`,
 			{
@@ -91,7 +93,7 @@ export const createFlag = async (
 					name: 'flexibleRollout',
 					constraints: [],
 					parameters: {
-						rollout: '50',
+						rollout,
 						stickiness: 'default',
 						groupId: name,
 					},

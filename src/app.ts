@@ -1,5 +1,5 @@
 import { startUnleash } from 'unleash-client'
-import { sample } from './utils'
+import { gaussianSample } from './utils'
 
 const [, , appName, Authorization] = Bun.argv
 console.log('Starting: ', appName)
@@ -38,6 +38,6 @@ for (const event of events) {
 }
 
 setInterval(() => {
-	const flag = sample(flags)
+	const flag = gaussianSample(flags)
 	unleash.isEnabled(flag)
 }, interval)
